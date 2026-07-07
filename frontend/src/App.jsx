@@ -13,7 +13,6 @@ const SCREENS = {
 export default function App() {
   const [screen, setScreen] = useState(SCREENS.REFLECTION)
   const [responses, setResponses] = useState(EMPTY_RESPONSES)
-  const [summary, setSummary] = useState(null)
   const [teacherEmail, setTeacherEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -27,7 +26,6 @@ export default function App() {
     setError(null)
     try {
       const result = await synthesize(responses)
-      setSummary(result)
       await sendSummary(email, responses, result)
       setTeacherEmail(email)
       setScreen(SCREENS.CONFIRMATION)
@@ -52,12 +50,8 @@ export default function App() {
         <TeacherHandoff onSend={handleSend} loading={loading} error={error} />
       )}
 
-      {screen === SCREENS.CONFIRMATION && summary && (
-        <Confirmation
-          teacherEmail={teacherEmail}
-          responses={responses}
-          summary={summary}
-        />
+      {screen === SCREENS.CONFIRMATION && (
+        <Confirmation teacherEmail={teacherEmail} />
       )}
     </div>
   )

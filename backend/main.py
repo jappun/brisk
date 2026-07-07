@@ -10,6 +10,7 @@ from google import genai
 from google.genai import types
 from pydantic import BaseModel, EmailStr
 
+from email_sender import send_email
 from email_template import compose_email_body, compose_email_subject
 from prompts import SYNTHESIS_PROMPT_TEMPLATE, SYSTEM_PROMPT
 
@@ -141,14 +142,15 @@ async def send_summary(request: SendSummaryRequest):
         request.summary.model_dump(),
     )
 
-    print("\n" + "=" * 60)
-    print("MOCK EMAIL SEND")
-    print("=" * 60)
-    print(f"To: {request.teacher_email}")
-    print(f"Subject: {subject}")
-    print("-" * 60)
-    print(body)
-    print("=" * 60 + "\n")
+    try:
+        send_email(str(request.teacher_email), subject, body)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Failed to send email: {exc}",
+        ) from exc
 
     return {"status": "sent", "teacher_email": request.teacher_email}
 
