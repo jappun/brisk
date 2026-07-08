@@ -30,6 +30,8 @@ export const EMPTY_RESPONSES = Object.fromEntries(
   QUESTIONS.map((q) => [q.key, ''])
 )
 
+const API_BASE = import.meta.env.VITE_API_URL ?? ''
+
 async function parseError(res, fallback) {
   const err = await res.json().catch(() => ({}))
   const detail = err.detail
@@ -39,7 +41,7 @@ async function parseError(res, fallback) {
 }
 
 export async function getConfig() {
-  const res = await fetch('/api/config')
+  const res = await fetch(`${API_BASE}/api/config`)
   if (!res.ok) {
     throw new Error('Could not load app configuration')
   }
@@ -47,7 +49,7 @@ export async function getConfig() {
 }
 
 export async function synthesize(responses) {
-  const res = await fetch('/api/synthesize', {
+  const res = await fetch(`${API_BASE}/api/synthesize`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ responses }),
@@ -59,7 +61,7 @@ export async function synthesize(responses) {
 }
 
 export async function sendSummary(teacherEmail, responses, summary) {
-  const res = await fetch('/api/send-summary', {
+  const res = await fetch(`${API_BASE}/api/send-summary`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

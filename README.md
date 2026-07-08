@@ -2,7 +2,7 @@
 
 A demo for a tool that complements Brisk's IEP Goal Generator by capturing the **student's perspective** before a teacher drafts goals. Students complete a short guided reflection; the app synthesizes their answers into a teacher-ready summary and emails both the summary and full transcript.
 
-- **Live demo:** [todo]
+- **Live demo:** https://brisk-iep-intake.vercel.app
 - **Demo video:** [todo]
 
 ## Demo limitation (Resend free tier)

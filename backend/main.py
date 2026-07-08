@@ -24,11 +24,18 @@ GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite").strip()
 def get_teacher_email() -> str | None:
     return os.getenv("TEACHER_EMAIL", "").strip() or None
 
+def get_allowed_origins() -> list[str]:
+    raw = os.getenv("ALLOWED_ORIGINS", "").strip()
+    origins = ["http://localhost:5173", "http://127.0.0.1:5173"]
+    if raw:
+        origins.extend(origin.strip() for origin in raw.split(",") if origin.strip())
+    return origins
+
 app = FastAPI(title="IEP Intake Companion API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=get_allowed_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
