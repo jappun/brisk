@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import HomeScreen from './components/HomeScreen'
 import ReflectionFlow from './components/ReflectionFlow'
 import TeacherHandoff from './components/TeacherHandoff'
 import Confirmation from './components/Confirmation'
@@ -6,13 +7,14 @@ import { EMPTY_RESPONSES, QUESTIONS, getConfig, synthesize, sendSummary } from '
 import { validateAllResponses } from './validateAnswer'
 
 const SCREENS = {
+  HOME: 'home',
   REFLECTION: 'reflection',
   HANDOFF: 'handoff',
   CONFIRMATION: 'confirmation',
 }
 
 export default function App() {
-  const [screen, setScreen] = useState(SCREENS.REFLECTION)
+  const [screen, setScreen] = useState(SCREENS.HOME)
   const [responses, setResponses] = useState(EMPTY_RESPONSES)
   const [summary, setSummary] = useState(null)
   const [teacherEmail, setTeacherEmail] = useState('')
@@ -91,6 +93,10 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 px-4 py-12">
+      {screen === SCREENS.HOME && (
+        <HomeScreen onStart={() => setScreen(SCREENS.REFLECTION)} />
+      )}
+
       {screen === SCREENS.REFLECTION && (
         <ReflectionFlow
           responses={responses}
