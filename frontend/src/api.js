@@ -22,6 +22,7 @@ export const QUESTIONS = [
   {
     key: 'anything_else',
     text: 'Is there anything else you want your teacher to know?',
+    optional: true,
   },
 ]
 
@@ -35,6 +36,14 @@ async function parseError(res, fallback) {
   if (typeof detail === 'string') return detail
   if (Array.isArray(detail)) return detail.map((d) => d.msg).join(', ')
   return fallback
+}
+
+export async function getConfig() {
+  const res = await fetch('/api/config')
+  if (!res.ok) {
+    throw new Error('Could not load app configuration')
+  }
+  return res.json()
 }
 
 export async function synthesize(responses) {

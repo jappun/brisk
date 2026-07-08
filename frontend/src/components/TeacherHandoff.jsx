@@ -1,15 +1,14 @@
 import { useState } from 'react'
 
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-}
-
-export default function TeacherHandoff({ onSend, loading, error }) {
-  const [teacherEmail, setTeacherEmail] = useState('')
+export default function TeacherHandoff({
+  teacherEmail,
+  onSend,
+  onBack,
+  loading,
+  error,
+}) {
   const [acknowledged, setAcknowledged] = useState(false)
-
-  const emailValid = isValidEmail(teacherEmail)
-  const canSend = emailValid && acknowledged && !loading
+  const canSend = acknowledged && !loading && Boolean(teacherEmail)
 
   return (
     <div className="mx-auto max-w-lg">
@@ -18,31 +17,21 @@ export default function TeacherHandoff({ onSend, loading, error }) {
           Thanks for telling me about yourself
         </h1>
         <p className="mt-2 text-stone-500">
-          I'll help get this to your teacher.
+          I&apos;ll help get this to your teacher.
         </p>
       </div>
 
       <div className="space-y-6 rounded-2xl border border-amber-100 bg-white p-8 shadow-sm">
         <div>
-          <label
-            htmlFor="teacher-email"
-            className="mb-2 block text-sm font-medium text-stone-700"
-          >
-            Your teacher's email address
-          </label>
-          <input
+          <p className="mb-2 text-sm font-medium text-stone-700">
+            Your teacher&apos;s email address
+          </p>
+          <div
             id="teacher-email"
-            type="email"
-            value={teacherEmail}
-            onChange={(e) => setTeacherEmail(e.target.value)}
-            placeholder="teacher@school.edu"
-            className="w-full rounded-xl border border-stone-200 bg-amber-50/40 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-200"
-          />
-          {teacherEmail && !emailValid && (
-            <p className="mt-1 text-sm text-red-500">
-              Please enter a valid email address.
-            </p>
-          )}
+            className="w-full rounded-xl border border-stone-200 bg-stone-100 px-4 py-3 text-stone-600"
+          >
+            {teacherEmail}
+          </div>
         </div>
 
         <div className="rounded-xl border-2 border-amber-300 bg-amber-50 p-5">
@@ -53,7 +42,8 @@ export default function TeacherHandoff({ onSend, loading, error }) {
             <p className="text-sm font-medium leading-relaxed text-amber-900">
               Your teacher will receive a summary{' '}
               <strong>and your full written answers</strong>, exactly as you
-              wrote them. Nothing is private from your teacher here.
+              wrote them. This will help them understand your perspective when
+              making your IEP.
             </p>
           </div>
         </div>
@@ -76,21 +66,31 @@ export default function TeacherHandoff({ onSend, loading, error }) {
           </div>
         )}
 
-        <button
-          type="button"
-          onClick={() => onSend(teacherEmail)}
-          disabled={!canSend}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:bg-stone-300"
-        >
-          {loading ? (
-            <>
-              <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              Sending...
-            </>
-          ) : (
-            'Send to my teacher'
-          )}
-        </button>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={onBack}
+            disabled={loading}
+            className="rounded-xl border border-stone-200 px-6 py-3 text-sm font-semibold text-stone-600 transition hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Back
+          </button>
+          <button
+            type="button"
+            onClick={onSend}
+            disabled={!canSend}
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-amber-500 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:bg-stone-300"
+          >
+            {loading ? (
+              <>
+                <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                Sending...
+              </>
+            ) : (
+              'Send to my teacher'
+            )}
+          </button>
+        </div>
       </div>
     </div>
   )
