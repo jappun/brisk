@@ -14,7 +14,7 @@ def send_email(to: str, subject: str, body: str) -> None:
     if not from_email:
         raise RuntimeError(
             "RESEND_FROM_EMAIL is not set. Add it to backend/.env (e.g. "
-            "'Student Voice <onboarding@resend.dev>')."
+            "'IEP Intake Companion <onboarding@resend.dev>')."
         )
 
     resend.api_key = api_key

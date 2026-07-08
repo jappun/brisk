@@ -1,22 +1,30 @@
-# Student Voice — IEP Goal Generating Tool Companion
+# IEP Intake Companion
 
-The purpose of this repo is to demo a tool that complements Brisk's existing IEP Goal Generating Tool. It captures the students perspective through a guided reflection, synthesizes their answer into a summary and emails both a summary and full transcript to the teacher.
+A demo for a tool that complements Brisk's IEP Goal Generator by capturing the **student's perspective** before a teacher drafts goals. Students complete a short guided reflection; the app synthesizes their answers into a teacher-ready summary and emails both the summary and full transcript.
 
-You can view the deployed demo here:
-One limitation since I'm using Resend's free tier is that the emails will only actually be sent to me, although the email content is visible on the last page for demo purposes. If you would like to see the actual email you can run the app locally. You'll need to sign up with [Resnd](https://resend.com). Quick start at the bottom of the file.
+- **Live demo:** [todo]
+- **Demo video:** [todo]
 
-## Future Implementation Ideas
-- Voice-to-text option may help students articulate themselves better/more
-- Have the teacher create one-time links for each student, so it is already connected to their Brisk-associated email to avoid sending mishaps
-- Set of default questions by grade-level. Allow teachers to edit the questions.
+## Demo limitation (Resend free tier)
 
-## Tech Stack
-- FastAPI
-- React
-- Vite
-- Tailwind CSS
-- Gemini API
-- Resend API
+Resend's sandbox sender (`onboarding@resend.dev`) only delivers to **the email you signed up with**. For the deployed demo, `TEACHER_EMAIL` is set to my address — all submissions route there. The confirmation screen still shows the full email content so viewers can see what a teacher would receive.
+
+To run it yourself with real sends, follow [Quick start](#quick-start-local) below and add your own API keys to `backend/.env`.
+
+## Future implementation ideas
+
+- Voice-to-text so students can speak their answers instead of typing
+- One-time links per student, pre-connected to the teacher's Brisk-associated email
+- Default question sets by grade level that can be edited by the teacher
+
+## Tech stack
+
+- Backend: FastAPI, Gemini API, Resend
+- Frontend: React, Vite, Tailwind CSS
+- Deploy: Vercel (frontend) + Python host for backend (e.g. Render, Railway)
+- Built with: Cursor (see `SPECIFICATION.md` for the original prompt)
+
+---
 
 ## Quick start (local)
 
@@ -35,17 +43,23 @@ Edit `backend/.env`:
 | Variable | Where to get it |
 |---|---|
 | `GEMINI_API_KEY` | [Google AI Studio](https://aistudio.google.com/apikey) |
+| `GEMINI_MODEL` | Optional. Default: `gemini-2.5-flash-lite` (better free-tier quota than `gemini-2.0-flash`) |
 | `RESEND_API_KEY` | [Resend](https://resend.com) → API Keys |
-| `RESEND_FROM_EMAIL` | `Student Voice <onboarding@resend.dev>` works for free tier |
-| `TEACHER_EMAIL` | Your Resend signup email — all summaries are sent here |
+| `RESEND_FROM_EMAIL` | `IEP Intake Companion <onboarding@resend.dev>` works for free tier |
+| `TEACHER_EMAIL` | Your Resend signup email — required; shown read-only in the UI |
 
-Start the backend:
+Start the backend (venv must be active):
 
 ```bash
+source venv/bin/activate
 fastapi dev main.py
 ```
 
+Or: `uvicorn main:app --reload`
+
 ### 2. Frontend
+
+In a second terminal:
 
 ```bash
 cd frontend
@@ -56,16 +70,3 @@ npm run dev
 Open http://localhost:5173
 
 ---
-
-
-To send to arbitrary addresses in production, verify a custom domain in Resend and update `RESEND_FROM_EMAIL` — not needed for this portfolio demo.
-
-
-## What it does
-
-1. Student answers 6 reflection questions (one at a time)
-2. Student enters teacher email and acknowledges their full answers will be shared
-3. Backend synthesizes a summary via Gemini (no diagnosis, no IEP language)
-4. Email sent via Resend with overview, detailed summary, and full transcript
-
-See `SPECIFICATION.md` for full product context.

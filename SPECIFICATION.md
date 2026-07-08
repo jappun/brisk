@@ -1,4 +1,4 @@
-# Student Voice — IEP Intake Companion
+# IEP Intake Companion
 
 A demo project built to show Brisk Teaching a gap in their IEP Goal Generator: no mechanism for capturing the student's own perspective before a teacher drafts goals. This tool captures that perspective through a short guided reflection, synthesizes it into a teacher-ready summary, and emails both the summary and the full transcript directly to the student's teacher.
 

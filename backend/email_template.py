@@ -43,7 +43,7 @@ def compose_email_body(responses: dict, summary: dict) -> str:
         lines.append("")
 
     lines.append("—")
-    lines.append("Sent via Student Voice — IEP Intake Companion (demo)")
+    lines.append("Sent via IEP Intake Companion")
 
     return "\n".join(lines)
 

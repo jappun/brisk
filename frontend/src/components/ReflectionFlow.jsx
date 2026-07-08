@@ -75,7 +75,7 @@ export default function ReflectionFlow({
   return (
     <div className="mx-auto max-w-lg">
       <div className="mb-8 text-center">
-        <p className="text-sm font-medium text-amber-700">Student Voice</p>
+        <p className="text-sm font-medium text-amber-700">IEP Intake Companion</p>
         <h1 className="mt-1 text-2xl font-semibold text-stone-800">
           Tell me about your school experience
         </h1>

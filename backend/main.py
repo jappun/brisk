@@ -24,7 +24,7 @@ GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite").strip()
 def get_teacher_email() -> str | None:
     return os.getenv("TEACHER_EMAIL", "").strip() or None
 
-app = FastAPI(title="Student Voice API")
+app = FastAPI(title="IEP Intake Companion API")
 
 app.add_middleware(
     CORSMiddleware,

@@ -2,7 +2,7 @@ export default function HomeScreen({ onStart }) {
   return (
     <div className="mx-auto max-w-lg">
       <div className="rounded-2xl border border-amber-100 bg-white p-8 shadow-sm">
-        <p className="text-sm font-medium text-amber-700">Student Voice</p>
+        <p className="text-sm font-medium text-amber-700">IEP Intake Companion</p>
         <h1 className="mt-2 text-3xl font-semibold leading-tight text-stone-800">
           Share your perspective before your IEP meeting
         </h1>
