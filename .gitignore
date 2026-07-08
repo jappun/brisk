@@ -14,3 +14,4 @@ frontend/dist/
 # IDE
 .vscode/
 .idea/
+SPECIFICATION.md

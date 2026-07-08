@@ -1,6 +1,22 @@
-# Student Voice — IEP Intake Companion
+# Student Voice — IEP Goal Generating Tool Companion
 
-A demo tool that captures a student's perspective through a short guided reflection, synthesizes it into a teacher-ready summary, and emails the result.
+The purpose of this repo is to demo a tool that complements Brisk's existing IEP Goal Generating Tool. It captures the students perspective through a guided reflection, synthesizes their answer into a summary and emails both a summary and full transcript to the teacher.
+
+You can view the deployed demo here:
+One limitation since I'm using Resend's free tier is that the emails will only actually be sent to me, although the email content is visible on the last page for demo purposes. If you would like to see the actual email you can run the app locally. You'll need to sign up with [Resnd](https://resend.com). Quick start at the bottom of the file.
+
+## Future Implementation Ideas
+- Voice-to-text option may help students articulate themselves better/more
+- Have the teacher create one-time links for each student, so it is already connected to their Brisk-associated email to avoid sending mishaps
+- Set of default questions by grade-level. Allow teachers to edit the questions.
+
+## Tech Stack
+- FastAPI
+- React
+- Vite
+- Tailwind CSS
+- Gemini API
+- Resend API
 
 ## Quick start (local)
 
@@ -26,7 +42,7 @@ Edit `backend/.env`:
 Start the backend:
 
 ```bash
-uvicorn main:app --reload
+fastapi dev main.py
 ```
 
 ### 2. Frontend
@@ -41,25 +57,9 @@ Open http://localhost:5173
 
 ---
 
-## Email setup (Resend)
-
-Resend's free sandbox sender (`onboarding@resend.dev`) only delivers to **the email you signed up with**. Set `TEACHER_EMAIL` to that address — the UI shows it as a read-only field.
-
-```env
-TEACHER_EMAIL=you@example.com
-```
 
 To send to arbitrary addresses in production, verify a custom domain in Resend and update `RESEND_FROM_EMAIL` — not needed for this portfolio demo.
 
----
-
-## Deploying
-
-The frontend (Vite/React) can deploy to Vercel. The backend (FastAPI) needs a Python host — Render, Railway, or Fly.io work well. Point the frontend's API proxy (or `VITE_API_URL`) at your backend URL.
-
-On your deployed backend, set all env vars from `.env.example`. For the public demo, include `TEACHER_EMAIL`.
-
----
 
 ## What it does
 
