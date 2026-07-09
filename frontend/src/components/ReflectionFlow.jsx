@@ -3,8 +3,7 @@ import { QUESTIONS } from '../api'
 import { validateAnswer, validateAllResponses } from '../validateAnswer'
 
 function canProceedWithAnswer(answer, optional) {
-  const trimmed = answer.trim()
-  if (optional && trimmed === '') return true
+  if (optional) return true
   return validateAnswer(answer) === null
 }
 
