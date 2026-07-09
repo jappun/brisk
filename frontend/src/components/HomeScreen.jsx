@@ -14,8 +14,7 @@ export default function HomeScreen({ onStart }) {
             This will help them support you better.
           </p>
           <p>
-            I&apos;ll ask you a few short questions. There are no right or wrong
-            answers here. Just say what&apos;s true for you, in your own words.
+            There are no right or wrong answers here. Just say what&apos;s true for you, in your own words.
           </p>
           <p>
             When you&apos;re done, your answers go to your teacher so they can
