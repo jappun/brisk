@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 import re
@@ -19,6 +20,17 @@ load_dotenv(Path(__file__).resolve().parent / ".env")
 
 # Lighter model with a separate free-tier quota pool (gemini-2.0-flash often shows limit: 0).
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite").strip()
+# Tried in order when the primary model returns 503 / high demand.
+GEMINI_FALLBACK_MODELS = [
+    m.strip()
+    for m in os.getenv(
+        "GEMINI_FALLBACK_MODELS",
+        "gemini-2.5-flash,gemini-2.0-flash-lite",
+    ).split(",")
+    if m.strip() and m.strip() != GEMINI_MODEL
+]
+MAX_SYNTHESIS_ATTEMPTS = 3
+RETRY_BASE_SECONDS = 1.5
 
 
 def get_teacher_email() -> str | None:
@@ -79,12 +91,34 @@ def _is_gemini_quota_error(exc: BaseException) -> bool:
     )
 
 
+def _is_gemini_unavailable_error(exc: BaseException) -> bool:
+    msg = str(exc)
+    upper = msg.upper()
+    return (
+        "503" in msg
+        or "UNAVAILABLE" in upper
+        or "HIGH DEMAND" in upper
+        or "OVERLOADED" in upper
+    )
+
+
 def parse_synthesis_json(text: str) -> dict:
     cleaned = text.strip()
     fence = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", cleaned)
     if fence:
         cleaned = fence.group(1).strip()
     return json.loads(cleaned)
+
+
+def _generate_synthesis(client: genai.Client, model: str, prompt: str):
+    return client.models.generate_content(
+        model=model,
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            system_instruction=SYSTEM_PROMPT,
+            response_mime_type="application/json",
+        ),
+    )
 
 
 @app.post("/api/synthesize", response_model=SynthesisResult)
@@ -101,37 +135,56 @@ async def synthesize(request: SynthesizeRequest):
         )
 
     prompt = SYNTHESIS_PROMPT_TEMPLATE.format(**request.responses.model_dump())
+    models = [GEMINI_MODEL, *GEMINI_FALLBACK_MODELS]
+    client = genai.Client(api_key=api_key)
+    data: dict | None = None
+    last_error: Exception | None = None
 
-    try:
-        client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(
-            model=GEMINI_MODEL,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_PROMPT,
-                response_mime_type="application/json",
+    for model in models:
+        for attempt in range(MAX_SYNTHESIS_ATTEMPTS):
+            try:
+                response = await asyncio.to_thread(
+                    _generate_synthesis, client, model, prompt
+                )
+                data = parse_synthesis_json(response.text or "")
+                break
+            except json.JSONDecodeError as exc:
+                raise HTTPException(
+                    status_code=502,
+                    detail=f"Failed to parse LLM response as JSON: {exc}",
+                ) from exc
+            except Exception as exc:
+                last_error = exc
+                if _is_gemini_quota_error(exc):
+                    raise HTTPException(
+                        status_code=429,
+                        detail=(
+                            "Gemini API quota or rate limit was exceeded. Wait and retry, "
+                            f"try another model via GEMINI_MODEL (current: {model}), or check "
+                            "billing. https://ai.google.dev/gemini-api/docs/rate-limits"
+                        ),
+                    ) from exc
+                if _is_gemini_unavailable_error(exc):
+                    if attempt < MAX_SYNTHESIS_ATTEMPTS - 1:
+                        await asyncio.sleep(RETRY_BASE_SECONDS * (2**attempt))
+                        continue
+                    # Exhausted retries on this model — try the next fallback.
+                    break
+                raise HTTPException(
+                    status_code=502,
+                    detail=f"LLM synthesis failed: {exc}",
+                ) from exc
+        if data is not None:
+            break
+
+    if data is None:
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "The AI model is temporarily overloaded. Please wait a few seconds and "
+                f"try again. (last error: {last_error})"
             ),
-        )
-        data = parse_synthesis_json(response.text or "")
-    except json.JSONDecodeError as exc:
-        raise HTTPException(
-            status_code=502,
-            detail=f"Failed to parse LLM response as JSON: {exc}",
-        ) from exc
-    except Exception as exc:
-        if _is_gemini_quota_error(exc):
-            raise HTTPException(
-                status_code=429,
-                detail=(
-                    "Gemini API quota or rate limit was exceeded. Wait and retry, try another model "
-                    f"via GEMINI_MODEL in backend/.env (current: {GEMINI_MODEL}), or check billing. "
-                    "https://ai.google.dev/gemini-api/docs/rate-limits"
-                ),
-            ) from exc
-        raise HTTPException(
-            status_code=502,
-            detail=f"LLM synthesis failed: {exc}",
-        ) from exc
+        ) from last_error
 
     required_keys = [
         "overview",
