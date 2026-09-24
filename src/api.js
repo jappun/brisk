@@ -1,5 +1,3 @@
-const API_BASE = import.meta.env.VITE_API_URL ?? ''
-
 export class ApiError extends Error {
   constructor(message, status, body) {
     super(message)
@@ -9,7 +7,8 @@ export class ApiError extends Error {
 }
 
 async function request(path, options, fallback) {
-  const res = await fetch(`${API_BASE}${path}`, {
+  // The API is served from the same origin (Vercel functions / Vite dev server).
+  const res = await fetch(path, {
     headers: { 'Content-Type': 'application/json' },
     ...options,
   })
