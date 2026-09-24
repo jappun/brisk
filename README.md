@@ -1,15 +1,21 @@
 # IEP Intake Companion
 
-A demo for a tool that complements Brisk's IEP Goal Generator by capturing the **student's perspective** before a teacher drafts goals. Students complete a short guided reflection; the app synthesizes their answers into a teacher-ready summary and emails both the summary and full transcript.
+A demo for a tool that complements Brisk's IEP Goal Generator by capturing the **student's perspective** before a teacher drafts goals. A teacher picks the questions and emails a student a one-time link; the student completes a short guided reflection; the app turns their answers into a schema-validated summary and emails the teacher both the summary and the full transcript.
 
 - **Live demo:** https://brisk-iep-intake.vercel.app
-- **Demo video:** https://www.youtube.com/watch?v=bMkanNiIdQA
 
-## Demo limitation (Resend free tier)
+## How it works
 
-Resend's sandbox sender (`onboarding@resend.dev`) only delivers to **the email you signed up with**. For the deployed demo, `TEACHER_EMAIL` is set to my address — all submissions route there. The confirmation screen still shows the full email content so viewers can see what a teacher would receive.
+1. **Teacher config** (`/`): toggle the default questions, turn adaptive follow-ups on/off, add custom questions, and enter teacher + student emails.
+2. **One-time link:** the API stores the config in Supabase (`intake_links`) under a random token and emails the student `/intake/{token}`. Links expire after 7 days and stop working once submitted.
+3. **Student reflection** (`/intake/{token}`): answers each question. With adaptive questioning on, some default questions ask one short follow-up when the answer matches a trigger (see `lib/questions.ts`). Custom questions never trigger follow-ups.
+4. **Summary:** the AI SDK (`generateText` + `Output.object()` with a zod schema) produces structured output via Gemini. If the output fails schema validation twice, the teacher still gets the transcript, clearly marked **Needs teacher review**.
+## Tech stack
 
-To run it yourself with real sends, follow [Quick start](#quick-start-local) below and add your own API keys to `backend/.env`.
+- Vite + React + Tailwind CSS (UI in `src/`)
+- Vercel Functions in TypeScript (`api/`), with shared question/validation logic in `lib/`
+- Vercel AI SDK v7 + Gemini, Supabase Postgres, Resend
+- Deploy: a single Vercel project
 
 ## Product Motivation
 
@@ -19,62 +25,34 @@ But the second problem is different. The one IEP I did have didn't play to my st
 
 Brisk's IEP tool doesn't yet address this second problem where the students' perspective is not accounted for. **So I built a small demo of an intake tool meant to complement the Goal Generator.** It collects the student perspective through a guided reflection and sends a summary and full transcript straight to their teacher. That way, the teacher has the option to easily include the student's ideas into the prompt for the IEP Goal Generator. 
 
-## Future implementation ideas
-
-- Voice-to-text so students can speak their answers instead of typing
-- One-time links per student, pre-connected to the teacher's Brisk-associated email
-- Default question sets by grade level that can be edited by the teacher
-
-## Tech stack
-
-- Backend: FastAPI, Gemini API, Resend
-- Frontend: React, Vite, Tailwind CSS
-- Deploy: Vercel (frontend) + Python host for backend (e.g. Render, Railway)
-- Built with: Cursor (see `SPECIFICATION.md` for the original prompt)
-
----
-
 ## Quick start (local)
 
-### 1. Backend
-
 ```bash
-cd backend
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
+npm install
+cp .env.example .env   # then fill in the values
+npm run dev
 ```
 
-Edit `backend/.env`:
+Open http://localhost:5173. The Vite dev server also runs the `api/` handlers, so no separate backend process is needed.
 
 | Variable | Where to get it |
 |---|---|
 | `GEMINI_API_KEY` | [Google AI Studio](https://aistudio.google.com/apikey) |
-| `GEMINI_MODEL` | Optional. Default: `gemini-2.5-flash-lite` (better free-tier quota than `gemini-2.0-flash`) |
+| `GEMINI_MODEL` / `GEMINI_FALLBACK_MODELS` | Optional. Fallbacks are tried when a model is overloaded |
 | `RESEND_API_KEY` | [Resend](https://resend.com) → API Keys |
-| `RESEND_FROM_EMAIL` | `IEP Intake Companion <onboarding@resend.dev>` works for free tier |
-| `TEACHER_EMAIL` | Your Resend signup email — required; shown read-only in the UI |
+| `RESEND_FROM_EMAIL` | A verified Resend sender, e.g. `IEP Intake Companion <noreply@jappundhillon.com>` |
+| `SUPABASE_URL`, `SUPABASE_SECRET_KEY` | Supabase → Project Settings → API |
+| `APP_URL` | Optional. Base URL for student links; defaults to the request origin |
 
-Start the backend (venv must be active):
+### Database
 
-```bash
-source venv/bin/activate
-fastapi dev main.py
-```
+Run [`supabase/intake_links.sql`](supabase/intake_links.sql) once in the Supabase SQL editor.
 
-Or: `uvicorn main:app --reload`
+## Emails
 
-### 2. Frontend
+Mail is sent from `noreply@jappundhillon.com`, which can't receive replies. Every email points recipients to jappun.dev@gmail.com for questions.
 
-In a second terminal:
+## Future implementation ideas
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Open http://localhost:5173
-
----
+- Voice-to-text so students can speak their answers instead of typing
+- Default question sets by grade level

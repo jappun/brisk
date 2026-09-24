@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+/* Brisk brand: DM Sans body, Anton display headings, teal-400 accent. */
+@theme {
+  --font-sans: "DM Sans", Arial, sans-serif;
+  --font-display: "Anton", Impact, sans-serif;
+  --color-ink: #0e161c;
+  --color-muted: #565b61;
+  --color-accent: #296c81;
+  --color-accent-dark: #06465c;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #ffffff;
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}

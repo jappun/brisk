@@ -1,12 +1,16 @@
-# Python
-backend/venv/
-backend/__pycache__/
-backend/.env
-*.pyc
+# Env (secrets)
+.env
+.env.*
+!.env.example
 
 # Node
-frontend/node_modules/
-frontend/dist/
+node_modules/
+dist/
+*.local
+*.log
+
+# Vercel
+.vercel/
 
 # OS
 .DS_Store
