@@ -2,7 +2,25 @@
 
 A demo for a tool that complements Brisk's IEP Goal Generator by capturing the **student's perspective** before a teacher drafts goals. A teacher picks the questions and emails a student a one-time link; the student completes a short guided reflection; the app turns their answers into a schema-validated summary and emails the teacher both the summary and the full transcript.
 
-- **Live demo:** https://brisk-iep-intake.vercel.app
+**Live demo:** https://brisk-iep-intake.vercel.app
+
+This is the second version of this demo, you can see a video of the old one here: https://www.youtube.com/watch?v=bMkanNiIdQA
+
+## Changes since v1
+
+### Product
+
+- **Teacher-first:** Teachers pick and add questions, then email the student a one-time link (expires in 7 days, single use).
+- **Adaptive follow-ups:** Two questions ask one follow-up if the student sounds frustrated or anxious.
+- **Works end to end:** v1's sandbox sender only emailed me. v2 sends from a verified domain to real addresses.
+- **Brisk branding:** Brisk's fonts, with its teal (`#296C81`) for primary actions.
+
+### Technical
+
+- **FastAPI → TypeScript Vercel Functions** (`api/`). The Vercel AI SDK is TypeScript-only, and one Vercel project replaces a separate Render backend.
+- **Schema-enforced summaries.** `generateText` + `Output.object()` with a zod schema replaces JSON-mode + `json.loads`. A schema failure retries once, then the teacher gets the transcript marked "Needs teacher review" instead of a bad summary.
+- **Supabase for one-time links.** Each link saves its question set when it's created. Submission claims the link with one conditional update, so a double-submit can't send twice, and the claim is released if the teacher email fails so the student can retry.
+- **Adaptive follow-ups** (`lib/questions.ts`): stored as a map keyed by question id, so follow-ups can be added to the other default questions. One regex trigger and one follow-up per question.
 
 ## How it works
 
