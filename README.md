@@ -1,12 +1,20 @@
 # IEP Intake Companion
 
-A demo for a tool that complements Brisk's IEP Goal Generator by capturing the **student's perspective** before a teacher drafts goals. A teacher picks the questions and emails a student a one-time link; the student completes a short guided reflection; the app turns their answers into a schema-validated summary and emails the teacher both the summary and the full transcript.
+A demo for a tool that complements Brisk's IEP Goal Generator by capturing the **student's perspective** before a teacher drafts goals. A teacher picks the questions and emails a student a one-time link; the student completes a short guided reflection; the app turns their answers into a schema-validated summary and emails the teacher both the full transcript, and a summary that they can feed into the IEP Goal Generator.
 
 **Live demo:** https://brisk-iep-intake.vercel.app
 
-This is the second version of this demo, you can see a video of the old one here: https://www.youtube.com/watch?v=bMkanNiIdQA
+## Product Motivation
+
+When I was 10, I was given a gifted designation by my school district, which meant I was supposed to have an IEP. Over the next 8 years of school, only one teacher actually built and followed through on one. It amounted to additional readings and a weekly logic puzzle problem set. While I loved the readings and doing extra book report presentations, the puzzles were a different story. I fell behind on them almost immediately. Looking back, I see two separate problems. The first is time. Most of my teachers didn't have the bandwidth to build an IEP at all. Your IEP Goal Generating Tool addresses this. 
+
+But the second problem is different. The one IEP I did have didn't play to my strengths, which I knew at the time. The puzzles felt like more effort than anything else I did in school and far too difficult of a challenge. At 11, telling my teacher "I don't think this works for me" felt like admitting I didn't deserve the gifted designation. I didn't say anything and the incomplete problem sets piled up, a mountain of evidence that I was failing at something my teacher thought I'd be good at. 
+
+Brisk's IEP tool doesn't yet address this second problem where the students' perspective is not accounted for. **So I built a small demo of an intake tool meant to complement the Goal Generator.** It collects the student perspective through a guided reflection and sends a summary and full transcript straight to their teacher. That way, the teacher has the option to easily include the student's ideas into the prompt for the IEP Goal Generator. 
 
 ## Changes since v1
+
+Live is the second version of this demo, you can see a video of the old one here: https://www.youtube.com/watch?v=bMkanNiIdQA
 
 ### Product
 
@@ -34,14 +42,6 @@ This is the second version of this demo, you can see a video of the old one here
 - Vercel Functions in TypeScript (`api/`), with shared question/validation logic in `lib/`
 - Vercel AI SDK v7 + Gemini, Supabase Postgres, Resend
 - Deploy: a single Vercel project
-
-## Product Motivation
-
-When I was 10, I was given a gifted designation by my school district, which meant I was supposed to have an IEP. Over the next 8 years of school, only one teacher actually built and followed through on one. It amounted to additional readings and a weekly logic puzzle problem set. While I loved the readings and doing extra book report presentations, the puzzles were a different story. I fell behind on them almost immediately. Looking back, I see two separate problems. The first is time. Most of my teachers didn't have the bandwidth to build an IEP at all. Your IEP Goal Generating Tool addresses this. 
-
-But the second problem is different. The one IEP I did have didn't play to my strengths, which I knew at the time. The puzzles felt like more effort than anything else I did in school and far too difficult of a challenge. At 11, telling my teacher "I don't think this works for me" felt like admitting I didn't deserve the gifted designation. I didn't say anything and the incomplete problem sets piled up, a mountain of evidence that I was failing at something my teacher thought I'd be good at. 
-
-Brisk's IEP tool doesn't yet address this second problem where the students' perspective is not accounted for. **So I built a small demo of an intake tool meant to complement the Goal Generator.** It collects the student perspective through a guided reflection and sends a summary and full transcript straight to their teacher. That way, the teacher has the option to easily include the student's ideas into the prompt for the IEP Goal Generator. 
 
 ## Quick start (local)
 
